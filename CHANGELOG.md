@@ -1,6 +1,7 @@
-# CHANGELOG -- qs-network-widget
+# Changelog — qs-network-widget
 
-## Provides Wifi and BT menu
+## Added:
 
-- Intended for Hyprland-Dots waybar menu
-  - https://github.com/Linuxbeginnings/Hyprland-Dots
+- Wi-Fi and Bluetooth menu for the Hyprland-Dots Waybar bar
+  - Intended for the Hyprland-Dots Waybar menu
+  - https://github.com/LinuxBeginnings/Hyprland-Dots
