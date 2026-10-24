@@ -12,17 +12,27 @@ QtObject {
     property color alert: "#f38ba8"
     property color surface: "#313244"
 
+    // Path written by the wallust template in template/wallust/wallust.toml.
+    // It is under ~/.config/quickshell/ because that is where Hyprland-Dots
+    // already keeps its Quickshell palette; the widget does not get its own dir.
+    readonly property string colorsPath:
+        Quickshell.env("HOME") + "/.config/quickshell/qs-network-colors.json"
+
     // Watch the wallust generated json file
     property FileWatch watcher: FileWatch {
-        path: Quickshell.env("HOME") + "/.config/quickshell/colors.json"
+        path: theme.colorsPath
         onFileChanged: theme.loadColors()
     }
 
     Component.onCompleted: loadColors()
 
+    // NOTE: XMLHttpRequest cannot read file:// URLs in Quickshell, and the
+    // FileWatch above is the only thing this sketch got right. Replace this
+    // function with Quickshell.Io FileView + JsonObject when the real theme
+    // loader is written into src/quickshell/.
     function loadColors() {
         var xhr = new XMLHttpRequest();
-        xhr.open("GET", "file://" + Quickshell.env("HOME") + "/.config/quickshell/colors.json");
+        xhr.open("GET", "file://" + theme.colorsPath);
         xhr.onreadystatechange = function() {
             if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
                 try {

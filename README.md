@@ -38,9 +38,14 @@ outside that setup.
 - `src/wallust/` — wallust template and config used to emit the palette the
   widget reads.
 - `template/` — early LLM-generated sketches kept as a design reference only.
-  This code is **not tested and not wired up**. It shows roughly where the
-  project is heading; the real implementation in `src/` supersedes it and is
-  expected to diverge heavily.
+  This code is **not tested and not wired up**. It was generated without any
+  knowledge of the Hyprland-Dots layout, so treat it as a rough sketch of the
+  UI, not as a starting point.
+  - It does **not** implement the full feature set. Some intended behaviour is
+    missing entirely, and some that is present is wrong.
+  - The real implementation in `src/` supersedes it and is expected to
+    diverge heavily. Do not extend `template/`; read it, then write real code
+    in `src/`.
 
 ## Requirements
 
@@ -53,19 +58,36 @@ outside that setup.
 
 ## Installation
 
-There is no installer yet. The panel is run directly by Quickshell, and the
-wallust template is meant to be installed into the Hyprland-Dots wallust
-template directory so the palette is regenerated with the rest of the theme.
+There is no installer yet, and installation is not a single step: the widget
+has to be registered with the Hyprland-Dots wallust setup before it will be
+themed. See **Theming** below.
 
 Installation instructions will be added once the widget reaches a usable state.
 
 ## Theming
 
-Colours come from wallust rather than being hardcoded. Hyprland-Dots already
-emits a Quickshell palette through its own wallust template, so the widget is
-intended to consume that existing output instead of introducing a second
-palette file. When the wallpaper changes, wallust rewrites the palette and the
-panel reloads it without a restart.
+Colours come from wallust rather than being hardcoded, so the panel follows the
+current wallpaper like the rest of the desktop.
+
+Hyprland-Dots selects its wallust config by version, so registering the widget
+means adding its `[templates]` block to **both** configs. Adding it to only one
+leaves the panel themeless for whichever wallust version is installed:
+
+- `~/.config/hypr/wallust/wallust.toml` (wallust v3)
+- `~/.config/hypr/wallust/wallust-v4.toml` (wallust v4)
+
+The template file itself also has to be installed into the templates directory
+that Hyprland-Dots passes to wallust, because that directory is what wallust
+searches:
+
+```
+colors-qs-network.json  ->  ~/.config/hypr/wallust/templates/
+```
+
+Both files are in this repository under `template/wallust/`. The palette is
+written to `~/.config/quickshell/qs-network-colors.json`, alongside the
+Quickshell palette Hyprland-Dots already generates for the rest of its shell.
+When wallust regenerates it, the panel reloads it without a restart.
 
 ## Contributing
 

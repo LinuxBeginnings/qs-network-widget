@@ -1,3 +1,29 @@
-[[entry]]
-template = "colors.json"
-target = "~/.config/quickshell/colors.json"
+# /* ---- 💫 https://github.com/LinuxBeginnings 💫 ---- */  #
+# wallust template registration for qs-network-widget
+#
+# This is NOT a standalone wallust config. It is the block that has to be
+# added to the Hyprland-Dots wallust configs so the widget's palette is
+# regenerated whenever the wallpaper changes.
+#
+# Hyprland-Dots runs wallust as:
+#   wallust --templates-dir ~/.config/hypr/wallust/templates -C <config>
+# where <config> is chosen by major version. See:
+#   ../Hyprland-Dots/config/hypr/scripts/WallustConfig.sh
+#
+# Because the config is chosen by version, the [templates] block below has to
+# be added to BOTH files. Adding it to only one leaves the widget themeless on
+# whichever wallust version the user happens to have:
+#   ~/.config/hypr/wallust/wallust.toml      (wallust v3)
+#   ~/.config/hypr/wallust/wallust-v4.toml   (wallust v4)
+#
+# The template file itself must also be installed into the templates dir, or
+# --templates-dir will not find it:
+#   colors-qs-network.json -> ~/.config/hypr/wallust/templates/
+#
+# Placeholder syntax is identical in v3 and v4, so one template serves both.
+# Do not prefix a placeholder with '#': wallust already emits the leading
+# '#', so "#{{color7}}" produces "##rrggbb".
+
+[templates]
+qs-network.template = 'colors-qs-network.json'
+qs-network.target = '~/.config/quickshell/qs-network-colors.json'

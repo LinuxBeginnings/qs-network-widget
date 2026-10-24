@@ -26,12 +26,44 @@ A Quickshell (Qt6 / QML) network control panel for the Waybar bar in
 Rules that follow from that layout:
 
 - Write real code in `src/`, never in `template/`.
-- Treat `template/` as untested reference. It is not wired up, it is not a
-  starting point to extend, and it should be expected to diverge or be deleted.
-  Review it before borrowing anything from it; do not trust it.
+- `template/` was generated **without any knowledge of Hyprland-Dots**. It is
+  not wired up, it is not a starting point to extend, and it should be expected
+  to diverge or be deleted. Review it before borrowing anything from it; do not
+  trust it.
+- `template/` is **not** a complete feature set. Features that are in scope may
+  be missing from it entirely. See "Feature scope" below for the authoritative
+  list, and never treat absence from `template/` as absence from scope.
+- The one exception is `template/wallust/`, which has been corrected to match
+  the Hyprland-Dots wallust setup. It is the reference for `src/wallust/`.
 - Git does not track empty directories. `src/quickshell/` and `src/wallust/`
   carry a `.gitkeep` so the tree shows up on GitHub. Keep the placeholder until
   a real file lands in the directory, then delete it in the same commit.
+
+## Feature scope
+
+This list is the source of truth for what the widget is meant to do. The
+`template/` sketches predate it and do not cover all of it, so check here rather
+than against the sketches.
+
+- **Wi-Fi**
+  - Show available wireless networks, with signal strength.
+  - **Connect to an available network.** The original sketch request asked only
+    to *show* networks, so connect may be absent or half-done in `template/`.
+    It is in scope and must not be dropped.
+  - Disconnect, and mark the network in use.
+  - Handle the secrets prompt; a network needing a password must not silently
+    fail.
+- **Bluetooth**
+  - List paired devices with connection state.
+  - Show signal strength (RSSI) and battery level where BlueZ reports them.
+  - Connect and disconnect devices.
+- **Radio control**
+  - Wi-Fi on/off and Bluetooth on/off.
+  - Airplane mode, soft-blocking all radios through `rfkill`.
+- **Throughput**
+  - Live read/write (RX/TX) graphs for the active interfaces.
+- **Theming**
+  - Follow the wallust palette, as the rest of Hyprland-Dots does.
 
 ## Shell environment
 
@@ -101,12 +133,31 @@ command an agent hands over to be run by hand.
 
 ## Theming
 
-- Colours come from wallust. Never hardcode a palette in QML, and never ship a
-  second colour file alongside the one wallust writes.
-- Hyprland-Dots already emits a Quickshell palette from its own wallust
-  template. Read `../Hyprland-Dots/config/hypr/wallust/wallust.toml` and the
-  templates under `../Hyprland-Dots/config/hypr/wallust/templates/` and consume
-  that output. Do not invent new keys and do not rename existing ones.
+- Colours come from wallust. Never hardcode a palette in QML.
+- The widget has its **own** wallust template, `colors-qs-network.json`. It
+  does not reuse the palette Hyprland-Dots generates for its own shell, because
+  that one does not expose enough of the palette. Registering it is a change to
+  the Hyprland-Dots wallust config, not a change to the widget's runtime.
+- Hyprland-Dots picks its wallust config by major version and runs wallust as
+  `wallust --templates-dir ~/.config/hypr/wallust/templates -C <config>`.
+  Read `../Hyprland-Dots/config/hypr/scripts/WallustConfig.sh` before touching
+  any of this.
+- Consequences that are easy to get wrong:
+  - The `[templates]` block must be added to **both**
+    `~/.config/hypr/wallust/wallust.toml` (v3) and
+    `~/.config/hypr/wallust/wallust-v4.toml` (v4).
+    - Adding it to one leaves the panel themeless on the other version.
+  - The template file must be installed into the templates directory, or
+    `--templates-dir` will not find it.
+  - The template must be plain `[templates]` TOML with
+    `<name>.template` / `<name>.target` keys. A bare `[[entry]]` array is not
+    valid in either Dots config.
+  - Placeholders already carry the leading `#`. `"#{{color7}}"` emits
+    `##rrggbb` and breaks the colour.
+- Keep the key names in `colors-qs-network.json` aligned with the semantic
+  vocabulary Hyprland-Dots already uses for its Quickshell palette
+  (`../Hyprland-Dots/config/hypr/wallust/templates/qml_color.json`). Do not
+  rename them per-widget.
 - When wallust regenerates the palette, the panel must pick it up without a
   restart. Watch the file, do not poll it.
 - Generated palette files are install output, not source. Do not commit them.
