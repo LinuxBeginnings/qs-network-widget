@@ -1,0 +1,3 @@
+[[entry]]
+template = "colors.json"
+target = "~/.config/quickshell/colors.json"
